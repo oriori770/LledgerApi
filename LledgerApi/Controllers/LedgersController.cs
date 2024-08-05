@@ -7,52 +7,54 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LledgerApi.Data;
 using LledgerApi.Models;
+using LledgerApi.ViewModels;
 
 namespace LledgerApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GroupsController : ControllerBase
+    public class LedgersController : ControllerBase
     {
         private readonly LledgerApiContext _context;
 
-        public GroupsController(LledgerApiContext context)
+        public LedgersController(LledgerApiContext context)
         {
             _context = context;
         }
 
-        // GET: api/Groups
+        // GET: api/Ledgers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Group>>> GetGroup()
+        public async Task<ActionResult<IEnumerable<Ledger>>> GetGroup()
         {
             return await _context.Group.ToListAsync();
         }
 
-        // GET: api/Groups/5
+        // GET: api/Ledgers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Group>> GetGroup(int id)
+        public async Task<ActionResult<Ledger>> GetLedger(int id)
         {
-            var @group = await _context.Group.FindAsync(id);
+            var ledger = await _context.Group.FindAsync(id);
 
-            if (@group == null)
+            if (ledger == null)
             {
                 return NotFound();
             }
 
-            return @group;
+            return ledger;
         }
 
-        // PUT: api/Groups/5
+        // PUT: api/Ledgers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGroup(int id, Group @group)
+        public async Task<IActionResult> PutLedger(int id, LedgerVM ledgerVM)
         {
-            if (id != @group.Id)
+            if (!LedgerExists(id))
             {
                 return BadRequest();
             }
+            Ledger ledger = ledgerVM.Toledger(ledgerVM);
 
-            _context.Entry(@group).State = EntityState.Modified;
+            _context.Entry(ledger).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +62,7 @@ namespace LledgerApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!GroupExists(id))
+                if (!LedgerExists(id))
                 {
                     return NotFound();
                 }
@@ -73,34 +75,35 @@ namespace LledgerApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Groups
+        // POST: api/Ledgers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Group>> PostGroup(Group @group)
+        public async Task<ActionResult<Ledger>> PostLedger(LedgerVM ledgerVM)
         {
-            _context.Group.Add(@group);
+            Ledger ledger = ledgerVM.Toledger(ledgerVM);
+            _context.Group.Add(ledger);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGroup", new { id = @group.Id }, @group);
+            return CreatedAtAction("GetLedger", new { id = ledger.Id }, ledger);
         }
 
-        // DELETE: api/Groups/5
+        // DELETE: api/Ledgers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGroup(int id)
+        public async Task<IActionResult> DeleteLedger(int id)
         {
-            var @group = await _context.Group.FindAsync(id);
-            if (@group == null)
+            var ledger = await _context.Group.FindAsync(id);
+            if (ledger == null)
             {
                 return NotFound();
             }
 
-            _context.Group.Remove(@group);
+            _context.Group.Remove(ledger);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool GroupExists(int id)
+        private bool LedgerExists(int id)
         {
             return _context.Group.Any(e => e.Id == id);
         }

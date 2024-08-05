@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LledgerApi.Data;
 using LledgerApi.Models;
+using LledgerApi.ViewModels;
 
 namespace LledgerApi.Controllers
 {
@@ -30,7 +31,7 @@ namespace LledgerApi.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
             var user = await _context.User.FindAsync(id);
 
@@ -45,13 +46,14 @@ namespace LledgerApi.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserVM userVM )
         {
-            if (id != user.Id)
+            if (!UserExists(id))
             {
                 return BadRequest();
             }
-
+            User user = userVM.ToUser(userVM);
+            user.Id = id;
             _context.Entry(user).State = EntityState.Modified;
 
             try
@@ -76,8 +78,9 @@ namespace LledgerApi.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(UserVM userVM)
         {
+            User user = userVM.ToUser(userVM);
             _context.User.Add(user);
             try
             {

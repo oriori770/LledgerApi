@@ -15,7 +15,7 @@ namespace LledgerApi.Data
         }
 
         public DbSet<LledgerApi.Models.User> User { get; set; } = default!;
-        public DbSet<LledgerApi.Models.Group> Group { get; set; } = default!;
+        public DbSet<LledgerApi.Models.Ledger> Group { get; set; } = default!;
         public DbSet<LledgerApi.Models.LedgersMember> LedgersMember { get; set; } = default!;
     }
 }

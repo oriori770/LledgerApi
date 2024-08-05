@@ -11,7 +11,7 @@ namespace LledgerApi.Models
 
 
 
-        public Group Group { get; set; }
+        public Ledger Group { get; set; }
         public User User { get; set; }
     }
 }
